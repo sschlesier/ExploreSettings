@@ -17,16 +17,27 @@
 // // DEALINGS IN THE SOFTWARE.
 
 using System.Web.Mvc;
+using DotNetNuke.Entities.Controllers;
 using DotNetNuke.Web.Services;
 
 namespace ExpoloreSettings
 {
+    /// <summary>
+    /// Services Framework controller for accessing Settings
+    /// <remarks>
+    /// Path is DesktopModules/ExploreSettings/API/Settings/{action}
+    /// </remarks>
+    /// </summary>
+    [SupportedModules("ExploreSettings")]
+    [ValidateAntiForgeryToken]
     public class SettingsController : DnnController
     {
         [AcceptVerbs(HttpVerbs.Get)]
         public JsonResult HostSettings()
         {
-            throw new System.NotImplementedException();
+            var data = HostController.Instance.GetSettingsDictionary();
+
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
     }
 }

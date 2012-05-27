@@ -18,7 +18,10 @@
 
 using System.Collections.Generic;
 using System.Web.Mvc;
+using DotNetNuke.ComponentModel;
+using DotNetNuke.Entities.Controllers;
 using ExpoloreSettings;
+using Moq;
 using NUnit.Framework;
 
 namespace Tests.ExploreSettings
@@ -26,18 +29,26 @@ namespace Tests.ExploreSettings
     [TestFixture]
     public class SettingsControllerTests
     {
+        [SetUp]
+        public void SetUp()
+        {
+            ComponentFactory.Container = new SimpleContainer();
+        }
+
         [Test]
         public void HostSettingsRetreivesAllSettings()
         {
             //Arrange
-            var expected = new List<string>();
-            var sc = new SettingsController();
+            var expected = new Dictionary<string, string>{{"SettingA", "valueA"}, {"SettingB", "valueB"}};
+            var mockHostController = new Mock<IHostController>();
+            mockHostController.Setup(x => x.GetSettingsDictionary()).Returns(expected);
+            HostController.RegisterInstance(mockHostController.Object);
 
             //Act
-            JsonResult result = sc.HostSettings();
+            JsonResult result = new SettingsController().HostSettings();
 
             //Assert
-            CollectionAssert.AreEquivalent(expected, (IList<string>)result.Data);
+            CollectionAssert.AreEquivalent(expected, (Dictionary<string, string>)result.Data);
         }
     }
 }

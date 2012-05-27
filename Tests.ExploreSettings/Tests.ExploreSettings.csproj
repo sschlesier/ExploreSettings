@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotNetNuke, Version=6.2.0.1569, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\DotNetNuke.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetNuke.Web">
       <HintPath>..\..\..\bin\DotNetNuke.Web.dll</HintPath>
     </Reference>
