@@ -18,9 +18,12 @@
 
 using System.Collections.Generic;
 using System.Web.Mvc;
+using DotNetNuke.Common;
 using DotNetNuke.ComponentModel;
 using DotNetNuke.Entities.Controllers;
-using ExpoloreSettings;
+using DotNetNuke.Entities.Portals;
+using ExploreSettings;
+using ExploreSettings.Testables;
 using Moq;
 using NUnit.Framework;
 
@@ -33,6 +36,7 @@ namespace Tests.ExploreSettings
         public void SetUp()
         {
             ComponentFactory.Container = new SimpleContainer();
+            HttpContextHelper.RegisterMockHttpContext();
         }
 
         [Test]
@@ -46,6 +50,29 @@ namespace Tests.ExploreSettings
 
             //Act
             JsonResult result = new SettingsController().HostSettings();
+
+            //Assert
+            CollectionAssert.AreEquivalent(expected, (Dictionary<string, string>)result.Data);
+        }
+
+        [Test]
+        public void PortalSettingsRetreivesAllPortalSettingsForCurrentPortal()
+        {
+            const int currentPortalId = 0;
+            
+            //Arrange
+            var expected = new Dictionary<string, string> { { "PortalSettingA", "valueA" }, { "PoratalSettingB", "valueB" } };
+            var mockPortalController = new Mock<ITestablePortalController>();
+            
+            mockPortalController.Setup(x => x.GetPortalSettingsDictionary(currentPortalId)).Returns(expected);
+            TestablePortalController.SetTestableInstance(mockPortalController.Object);
+
+            var controller = new SettingsController
+                                 {ControllerContext = new ControllerContext {HttpContext = HttpContextSource.Current}};
+            HttpContextSource.Current.Items["PortalSettings"] = new PortalSettings{PortalId = currentPortalId};
+            
+            //Act
+            JsonResult result = controller.CurrentPortalSettings();
 
             //Assert
             CollectionAssert.AreEquivalent(expected, (Dictionary<string, string>)result.Data);

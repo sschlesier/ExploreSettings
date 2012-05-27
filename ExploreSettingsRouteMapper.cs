@@ -18,7 +18,7 @@
 
 using DotNetNuke.Web.Services;
 
-namespace ExpoloreSettings
+namespace ExploreSettings
 {
     public class ExploreSettingsRouteMapper : IServiceRouteMapper
     {

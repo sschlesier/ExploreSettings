@@ -16,11 +16,13 @@
 // // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // // DEALINGS IN THE SOFTWARE.
 
+using System;
 using System.Web.Mvc;
 using DotNetNuke.Entities.Controllers;
 using DotNetNuke.Web.Services;
+using ExploreSettings.Testables;
 
-namespace ExpoloreSettings
+namespace ExploreSettings
 {
     /// <summary>
     /// Services Framework controller for accessing Settings
@@ -36,6 +38,14 @@ namespace ExpoloreSettings
         public JsonResult HostSettings()
         {
             var data = HostController.Instance.GetSettingsDictionary();
+
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
+        [AcceptVerbs(HttpVerbs.Get)]
+        public JsonResult CurrentPortalSettings()
+        {
+            var data = TestablePortalController.Instance.GetPortalSettingsDictionary(PortalSettings.PortalId);
 
             return Json(data, JsonRequestBehavior.AllowGet);
         }
