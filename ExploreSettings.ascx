@@ -48,10 +48,6 @@
             return false;
         });
 
-        self.htmlEncode = function(value) {
-            return $('<div/>').text(value).html();
-        };
-
         self.editItem = function(elem) {
             var items = elem.textContent.split(':');
             $("#key").text(items[0]);
@@ -73,7 +69,7 @@
                 }
                         
                 if(include) {
-                    s += "<li>" + self.htmlEncode(key) + ":" + self.htmlEncode(self.data[key]) + "</li>";
+                    s += "<li>" +key + ":" + self.data[key] + "</li>";
                 }
             }
             
