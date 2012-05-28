@@ -19,6 +19,7 @@
 using System;
 using System.Web.Mvc;
 using DotNetNuke.Entities.Controllers;
+using DotNetNuke.Entities.Portals;
 using DotNetNuke.Web.Services;
 using ExploreSettings.Testables;
 
@@ -49,9 +50,19 @@ namespace ExploreSettings
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 
+        [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
         public string UpdateHostSetting(string key, string value)
         {
             HostController.Instance.Update(key, value);
+            return "OK";
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        [ValidateAntiForgeryToken]
+        public string UpdatePortalSetting(string key, string value)
+        {
+            TestablePortalController.Instance.UpdatePortalSetting(PortalSettings.PortalId, key, value);
             return "OK";
         }
     }

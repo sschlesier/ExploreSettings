@@ -10,5 +10,10 @@ namespace ExploreSettings.Testables
         {
             return PortalController.GetPortalSettingsDictionary(portalId);
         }
+
+        public void UpdatePortalSetting(int portalId, string key, string value)
+        {
+            PortalController.UpdatePortalSetting(portalId, key, value);
+        }
     }
 }

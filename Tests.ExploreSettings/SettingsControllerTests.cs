@@ -93,5 +93,25 @@ namespace Tests.ExploreSettings
             Assert.AreEqual("OK", result);
             mockHostController.Verify(x => x.Update("key", "value"), Times.Once());
         }
+
+        [Test]
+        public void UpdatePortalSettingCalls()
+        {
+            const int currentPortalId = 0;
+
+            //Arrange
+            var mockPortalController = new Mock<ITestablePortalController>();
+            TestablePortalController.SetTestableInstance(mockPortalController.Object);
+
+            var controller = new SettingsController { ControllerContext = new ControllerContext { HttpContext = HttpContextSource.Current } };
+            HttpContextSource.Current.Items["PortalSettings"] = new PortalSettings { PortalId = currentPortalId };
+
+            //Act
+            string result = controller.UpdatePortalSetting("key", "value");
+
+            //Assert
+            Assert.AreEqual("OK", result);
+            mockPortalController.Verify(x => x.UpdatePortalSetting(currentPortalId, "key", "value"), Times.Once());
+        }
     }
 }
