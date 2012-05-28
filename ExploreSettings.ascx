@@ -1,12 +1,15 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ExploreSettings.ascx.cs" Inherits="ExploreSettings.ExploreSettings" %>
 <asp:Panel runat="server" ID="ScopeWrapper">
     <div>
-        Host Settings
-        <ul id="hostSettings" />
-    </div>
-    <div>
-        Portal Settings
-        <ul id="portalSettings" />
+        <select id="settingSelect">
+            <option value="HostSettings">
+                Host
+            </option>
+            <option value="CurrentPortalSettings">
+                Portal
+            </option>
+        </select>
+        <ul id="settings" />
     </div>
 </asp:Panel>
 <script type="text/javascript">
@@ -14,12 +17,18 @@
         var self = this;
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>');
         var sf = $.ServicesFramework(<%=ModuleId %>);
+       
+        $("#settingSelect", moduleScope).change(function() {
+            self.LoadSettings();
+        });
 
         self.htmlEncode = function(value) {
             return $('<div/>').text(value).html();
         };
 
-        self.LoadSettings = function(action, selector) {
+        self.LoadSettings = function() {
+            var action = $("#settingSelect").val();
+            
             $.ajax({
                 type: "GET",
                 url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/" + action,
@@ -34,12 +43,11 @@
                     for (key in data) {
                         s += "<li>" + self.htmlEncode(key) + ":" + self.htmlEncode(data[key]) + "</li>";
                     }
-                    $(selector, moduleScope).append(s);
+                    $("#settings", moduleScope).empty().append(s);
                 }
             });
         };
 
-        self.LoadSettings("HostSettings", "#hostSettings");
-        self.LoadSettings("CurrentPortalSettings", "#portalSettings");
+        self.LoadSettings();
     })
 </script>
