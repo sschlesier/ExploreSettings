@@ -40,5 +40,6 @@
         };
 
         self.LoadSettings("HostSettings", "#hostSettings");
+        self.LoadSettings("CurrentPortalSettings", "#portalSettings");
     })
 </script>
