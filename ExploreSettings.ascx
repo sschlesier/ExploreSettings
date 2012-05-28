@@ -9,6 +9,7 @@
                 Portal
             </option>
         </select>
+        Filter: <input type="text" id="filter"/>
         <ul id="settings" />
     </div>
 </asp:Panel>
@@ -19,14 +20,43 @@
         var sf = $.ServicesFramework(<%=ModuleId %>);
        
         $("#settingSelect", moduleScope).change(function() {
-            self.LoadSettings();
+            self.loadSettings();
+        });
+
+        $("#filter").keyup(function() {
+            self.displayData();
         });
 
         self.htmlEncode = function(value) {
             return $('<div/>').text(value).html();
         };
 
-        self.LoadSettings = function() {
+        self.displayData = function() {
+            if(!self.data) {
+                return;
+            }
+
+            var filter = $("#filter").val().toLowerCase();
+            var s = "";
+            for (key in self.data) {
+                var include = true;
+                if(filter) {
+                    include = key.toLowerCase().indexOf(filter) > -1 || self.data[key].toLowerCase().indexOf(filter) > -1;
+                }
+                        
+                if(include) {
+                    s += "<li>" + self.htmlEncode(key) + ":" + self.htmlEncode(self.data[key]) + "</li>";
+                }
+            }
+            
+            if(!s) {
+                s = "<li>No Settings!!!</li>";
+            }
+
+            $("#settings", moduleScope).empty().append(s);
+        };
+
+        self.loadSettings = function() {
             var action = $("#settingSelect").val();
             
             $.ajax({
@@ -39,15 +69,13 @@
                 }
             }).done(function(data) {
                 if (data !== undefined && data != null) {
-                    var s = "";
-                    for (key in data) {
-                        s += "<li>" + self.htmlEncode(key) + ":" + self.htmlEncode(data[key]) + "</li>";
-                    }
-                    $("#settings", moduleScope).empty().append(s);
+                
+                    self.data = data;
+                    self.displayData();
                 }
             });
         };
 
-        self.LoadSettings();
+        self.loadSettings();
     })
 </script>
