@@ -31,7 +31,6 @@ namespace ExploreSettings
     /// </remarks>
     /// </summary>
     [SupportedModules("ExploreSettings")]
-    [ValidateAntiForgeryToken]
     public class SettingsController : DnnController
     {
         [AcceptVerbs(HttpVerbs.Get)]
