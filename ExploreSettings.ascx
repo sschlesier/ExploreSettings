@@ -10,6 +10,12 @@
             </option>
         </select>
         Filter: <input type="text" id="filter"/>
+        <span id="editBlock">
+            <span id="key"></span>
+            <input type="text" id="value"/>
+            <input type="submit" id="updateKey" value="Update Key"/>
+            <input type="submit" id="cancelEdit" value="Cancel"/>
+        </span>
         <ul id="settings" />
     </div>
 </asp:Panel>
@@ -18,6 +24,7 @@
         var self = this;
         var moduleScope = $('#<%=ScopeWrapper.ClientID %>');
         var sf = $.ServicesFramework(<%=ModuleId %>);
+        $("#editBlock").hide();
        
         $("#settingSelect", moduleScope).change(function() {
             self.loadSettings();
@@ -27,8 +34,25 @@
             self.displayData();
         });
 
+        $("#updateKey").click(function() {
+            $("#editBlock").hide();
+            return false;
+        });
+
+        $("#cancelEdit").click(function() {
+            $("#editBlock").hide();
+            return false;
+        });
+
         self.htmlEncode = function(value) {
             return $('<div/>').text(value).html();
+        };
+
+        self.editItem = function(elem) {
+            var items = elem.textContent.split(':');
+            $("#key").text(items[0]);
+            $("#value").val(items[1]);
+            $("#editBlock").show();
         };
 
         self.displayData = function() {
@@ -54,6 +78,9 @@
             }
 
             $("#settings", moduleScope).empty().append(s);
+            $("li", moduleScope).click(function() {
+                self.editItem(this);
+            });
         };
 
         self.loadSettings = function() {
