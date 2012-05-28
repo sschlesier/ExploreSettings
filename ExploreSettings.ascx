@@ -27,6 +27,7 @@
         $("#editBlock").hide();
        
         $("#settingSelect", moduleScope).change(function() {
+            $("#filter").val("");
             self.loadSettings();
         });
 
