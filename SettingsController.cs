@@ -19,7 +19,7 @@
 using System;
 using System.Web.Mvc;
 using DotNetNuke.Entities.Controllers;
-using DotNetNuke.Entities.Portals;
+using DotNetNuke.Security;
 using DotNetNuke.Web.Services;
 using ExploreSettings.Testables;
 
@@ -43,6 +43,7 @@ namespace ExploreSettings
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
         public JsonResult CurrentPortalSettings()
         {
             var data = TestablePortalController.Instance.GetPortalSettingsDictionary(PortalSettings.PortalId);
@@ -60,6 +61,7 @@ namespace ExploreSettings
 
         [AcceptVerbs(HttpVerbs.Post)]
         [ValidateAntiForgeryToken]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
         public string UpdatePortalSetting(string key, string value)
         {
             TestablePortalController.Instance.UpdatePortalSetting(PortalSettings.PortalId, key, value);

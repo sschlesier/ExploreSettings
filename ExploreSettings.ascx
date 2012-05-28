@@ -2,9 +2,11 @@
 <asp:Panel runat="server" ID="ScopeWrapper">
     <div>
         <select id="settingSelect">
-            <option value="0">
-                Host
-            </option>
+            <% if (UserInfo.IsSuperUser) { %>
+                <option value="0">
+                    Host
+                </option>
+            <%  } %>
             <option value="1">
                 Portal
             </option>
@@ -127,14 +129,11 @@
                 type: "POST",
                 url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/" + action,
                 data: sf.getAntiForgeryProperty(postData),
-                beforeSend: sf.setModuleHeaders,
-                error: function(xhr, status, error) {
-                    alert(error);
-                }
+                beforeSend: sf.setModuleHeaders
             }).done(function() {
                 self.loadSettings();
-            }).fail(function () {
-                alert("Uh-oh, something broke");
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
             });
         };
 
