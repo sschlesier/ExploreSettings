@@ -35,6 +35,7 @@
         });
 
         $("#updateKey").click(function() {
+            self.updateKey();
             $("#editBlock").hide();
             return false;
         });
@@ -100,6 +101,23 @@
                     self.data = data;
                     self.displayData();
                 }
+            });
+        };
+
+        self.updateKey = function() {
+            var postData = { key: $("#key").text(), value: $("#value").val() };
+            $.ajax({
+                type: "POST",
+                url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/UpdateHostSetting",
+                data: sf.getAntiForgeryProperty(postData),
+                beforeSend: sf.setModuleHeaders,
+                error: function(xhr, status, error) {
+                    alert(error);
+                }
+            }).done(function() {
+                self.loadSettings();
+            }).fail(function () {
+                alert("Uh-oh, something broke");
             });
         };
 
