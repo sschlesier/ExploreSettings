@@ -19,23 +19,26 @@
             return $('<div/>').text(value).html();
         };
 
-        $.ajax({
-            type: "GET",
-            url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/HostSettings",
-            data: '',
-            beforeSend: sf.setModuleHeaders,
-            error: function (xhr, status, error) {
-                alert(error);
-            }
-        }).done(function (data) {
-            if(data !== undefined && data != null) {
-                var s = "";
-                for(key in data) {
-                    s += "<li>" + self.htmlEncode(key) + ":" + self.htmlEncode(data[key]) + "</li>";
+        self.LoadSettings = function(action, selector) {
+            $.ajax({
+                type: "GET",
+                url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/" + action,
+                data: '',
+                beforeSend: sf.setModuleHeaders,
+                error: function(xhr, status, error) {
+                    alert(error);
                 }
-                $("#hostSettings", moduleScope).append(s);
-            }
-        });
+            }).done(function(data) {
+                if (data !== undefined && data != null) {
+                    var s = "";
+                    for (key in data) {
+                        s += "<li>" + self.htmlEncode(key) + ":" + self.htmlEncode(data[key]) + "</li>";
+                    }
+                    $(selector, moduleScope).append(s);
+                }
+            });
+        };
 
+        self.LoadSettings("HostSettings", "#hostSettings");
     })
 </script>
