@@ -100,17 +100,15 @@
             $.ajax({
                 type: "GET",
                 url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/" + action,
-                data: '',
-                beforeSend: sf.setModuleHeaders,
-                error: function(xhr, status, error) {
-                    alert(error);
-                }
+                beforeSend: sf.setModuleHeaders
             }).done(function(data) {
                 if (data !== undefined && data != null) {
                 
                     self.data = data;
                     self.displayData();
                 }
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
             });
         };
 
