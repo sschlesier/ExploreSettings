@@ -48,5 +48,11 @@ namespace ExploreSettings
 
             return Json(data, JsonRequestBehavior.AllowGet);
         }
+
+        public string UpdateHostSetting(string key, string value)
+        {
+            HostController.Instance.Update(key, value);
+            return "OK";
+        }
     }
 }

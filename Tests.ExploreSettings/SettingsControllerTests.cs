@@ -77,5 +77,21 @@ namespace Tests.ExploreSettings
             //Assert
             CollectionAssert.AreEquivalent(expected, (Dictionary<string, string>)result.Data);
         }
+
+        [Test]
+        public void UpdateHostSettingsCallsHostControllerUpdate()
+        {
+            //Arrange
+            var mockHostController = new Mock<IHostController>();
+            HostController.RegisterInstance(mockHostController.Object);
+            
+            //Act
+            var controller = new SettingsController();
+            string result = controller.UpdateHostSetting("key", "value");
+
+            //Assert
+            Assert.AreEqual("OK", result);
+            mockHostController.Verify(x => x.Update("key", "value"), Times.Once());
+        }
     }
 }
