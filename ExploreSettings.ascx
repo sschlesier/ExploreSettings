@@ -23,36 +23,37 @@
 </asp:Panel>
 <script type="text/javascript">
     $(document).ready(function () {
-        var self = this;
-        var moduleScope = $('#<%=ScopeWrapper.ClientID %>');
-        var sf = $.ServicesFramework(<%=ModuleId %>);
-        $("#editBlock").hide();
+        var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
+            self = moduleScope,
+            sf = $.ServicesFramework(<%=ModuleId %>);
+        
+        $("#editBlock", moduleScope).hide();
        
         $("#settingSelect", moduleScope).change(function() {
-            $("#filter").val("");
+            $("#filter", moduleScope).val("");
             self.loadSettings();
         });
 
-        $("#filter").keyup(function() {
+        $("#filter", moduleScope).keyup(function() {
             self.displayData();
         });
 
-        $("#updateKey").click(function() {
+        $("#updateKey", moduleScope).click(function() {
             self.updateKey();
-            $("#editBlock").hide();
+            $("#editBlock", moduleScope).hide();
             return false;
         });
 
-        $("#cancelEdit").click(function() {
+        $("#cancelEdit", moduleScope).click(function() {
             $("#editBlock").hide();
             return false;
         });
 
         self.editItem = function(elem) {
             var items = elem.textContent.split(':');
-            $("#key").text(items[0]);
-            $("#value").val(items[1]);
-            $("#editBlock").show();
+            $("#key", moduleScope).text(items[0]);
+            $("#value", moduleScope).val(items[1]);
+            $("#editBlock", moduleScope).show();
         };
 
         self.displayData = function() {
@@ -60,7 +61,7 @@
                 return;
             }
 
-            var filter = $("#filter").val().toLowerCase();
+            var filter = $("#filter", moduleScope).val().toLowerCase();
             var s = "";
             for (key in self.data) {
                 var include = true;
@@ -84,7 +85,7 @@
         };
 
         self.getLoadAction = function() {
-            if($("#settingSelect").val() === "1") {
+            if($("#settingSelect", moduleScope).val() === "1") {
                 return "CurrentPortalSettings";    
             }
             return "HostSettings";
@@ -109,14 +110,14 @@
         };
 
         self.getUpdateAction = function() {
-            if($("#settingSelect").val() === "1") {
+            if($("#settingSelect", moduleScope).val() === "1") {
                 return "UpdatePortalSetting";
             }
             return "UpdateHostSetting";
         };
 
         self.updateKey = function() {
-            var postData = { key: $("#key").text(), value: $("#value").val() };
+            var postData = { key: $("#key", moduleScope).text(), value: $("#value", moduleScope).val() };
             var action = self.getUpdateAction();
             
             $.ajax({
