@@ -2,10 +2,10 @@
 <asp:Panel runat="server" ID="ScopeWrapper">
     <div>
         <select id="settingSelect">
-            <option value="HostSettings">
+            <option value="0">
                 Host
             </option>
-            <option value="CurrentPortalSettings">
+            <option value="1">
                 Portal
             </option>
         </select>
@@ -85,8 +85,15 @@
             });
         };
 
+        self.getLoadAction = function() {
+            if($("#settingSelect").val() === "1") {
+                return "CurrentPortalSettings";    
+            }
+            return "HostSettings";
+        };
+
         self.loadSettings = function() {
-            var action = $("#settingSelect").val();
+            var action = self.getLoadAction();
             
             $.ajax({
                 type: "GET",
@@ -105,11 +112,20 @@
             });
         };
 
+        self.getUpdateAction = function() {
+            if($("#settingSelect").val() === "1") {
+                return "UpdatePortalSetting";
+            }
+            return "UpdateHostSetting";
+        };
+
         self.updateKey = function() {
             var postData = { key: $("#key").text(), value: $("#value").val() };
+            var action = self.getUpdateAction();
+            
             $.ajax({
                 type: "POST",
-                url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/UpdateHostSetting",
+                url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/" + action,
                 data: sf.getAntiForgeryProperty(postData),
                 beforeSend: sf.setModuleHeaders,
                 error: function(xhr, status, error) {
