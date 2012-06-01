@@ -76,6 +76,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsController.cs" />
     <Compile Include="Testables\TestablePortalController.cs" />
+    <Compile Include="WelcomeController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ExploreSettings.ascx" />

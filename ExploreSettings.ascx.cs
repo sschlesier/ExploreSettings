@@ -10,10 +10,12 @@ namespace ExploreSettings
         {
             base.OnLoad(e);
 
-            ServicesFramework.Instance.RequestAjaxScriptSupport();
+            //Not needed, included in the call for anti-forgery
+//            jQuery.RequestRegistration();
+//            ServicesFramework.Instance.RequestAjaxScriptSupport();
+
             ServicesFramework.Instance.RequestAjaxAntiForgerySupport();
             
-            jQuery.RequestRegistration();
         }
     }
 }
