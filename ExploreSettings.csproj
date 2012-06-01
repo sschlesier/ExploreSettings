@@ -42,7 +42,6 @@
     <Reference Include="DotNetNuke.Web">
       <HintPath>..\..\bin\DotNetNuke.Web.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />

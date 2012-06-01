@@ -2,9 +2,11 @@
 <asp:Panel runat="server" ID="ScopeWrapper">
     <div>
         <select id="settingSelect">
-            <option value="0">
-                Host
-            </option>
+            <% if (UserInfo.IsSuperUser) { %>
+                <option value="0">
+                    Host
+                </option>
+            <%  } %>
             <option value="1">
                 Portal
             </option>
@@ -21,40 +23,37 @@
 </asp:Panel>
 <script type="text/javascript">
     $(document).ready(function () {
-        var self = this;
-        var moduleScope = $('#<%=ScopeWrapper.ClientID %>');
-        var sf = $.ServicesFramework(<%=ModuleId %>);
-        $("#editBlock").hide();
+        var moduleScope = $('#<%=ScopeWrapper.ClientID %>'),
+            self = moduleScope,
+            sf = $.ServicesFramework(<%=ModuleId %>);
+        
+        $("#editBlock", moduleScope).hide();
        
         $("#settingSelect", moduleScope).change(function() {
-            $("#filter").val("");
+            $("#filter", moduleScope).val("");
             self.loadSettings();
         });
 
-        $("#filter").keyup(function() {
+        $("#filter", moduleScope).keyup(function() {
             self.displayData();
         });
 
-        $("#updateKey").click(function() {
+        $("#updateKey", moduleScope).click(function() {
             self.updateKey();
-            $("#editBlock").hide();
+            $("#editBlock", moduleScope).hide();
             return false;
         });
 
-        $("#cancelEdit").click(function() {
+        $("#cancelEdit", moduleScope).click(function() {
             $("#editBlock").hide();
             return false;
         });
-
-        self.htmlEncode = function(value) {
-            return $('<div/>').text(value).html();
-        };
 
         self.editItem = function(elem) {
             var items = elem.textContent.split(':');
-            $("#key").text(items[0]);
-            $("#value").val(items[1]);
-            $("#editBlock").show();
+            $("#key", moduleScope).text(items[0]);
+            $("#value", moduleScope).val(items[1]);
+            $("#editBlock", moduleScope).show();
         };
 
         self.displayData = function() {
@@ -62,7 +61,7 @@
                 return;
             }
 
-            var filter = $("#filter").val().toLowerCase();
+            var filter = $("#filter", moduleScope).val().toLowerCase();
             var s = "";
             for (key in self.data) {
                 var include = true;
@@ -71,7 +70,7 @@
                 }
                         
                 if(include) {
-                    s += "<li>" + self.htmlEncode(key) + ":" + self.htmlEncode(self.data[key]) + "</li>";
+                    s += "<li>" +key + ":" + self.data[key] + "</li>";
                 }
             }
             
@@ -86,7 +85,7 @@
         };
 
         self.getLoadAction = function() {
-            if($("#settingSelect").val() === "1") {
+            if($("#settingSelect", moduleScope).val() === "1") {
                 return "CurrentPortalSettings";    
             }
             return "HostSettings";
@@ -98,43 +97,38 @@
             $.ajax({
                 type: "GET",
                 url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/" + action,
-                data: '',
-                beforeSend: sf.setModuleHeaders,
-                error: function(xhr, status, error) {
-                    alert(error);
-                }
+                beforeSend: sf.setModuleHeaders
             }).done(function(data) {
                 if (data !== undefined && data != null) {
                 
                     self.data = data;
                     self.displayData();
                 }
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
             });
         };
 
         self.getUpdateAction = function() {
-            if($("#settingSelect").val() === "1") {
+            if($("#settingSelect", moduleScope).val() === "1") {
                 return "UpdatePortalSetting";
             }
             return "UpdateHostSetting";
         };
 
         self.updateKey = function() {
-            var postData = { key: $("#key").text(), value: $("#value").val() };
+            var postData = { key: $("#key", moduleScope).text(), value: $("#value", moduleScope).val() };
             var action = self.getUpdateAction();
             
             $.ajax({
                 type: "POST",
                 url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/" + action,
                 data: sf.getAntiForgeryProperty(postData),
-                beforeSend: sf.setModuleHeaders,
-                error: function(xhr, status, error) {
-                    alert(error);
-                }
+                beforeSend: sf.setModuleHeaders
             }).done(function() {
                 self.loadSettings();
-            }).fail(function () {
-                alert("Uh-oh, something broke");
+            }).fail(function (xhr, result, status) {
+                alert("Uh-oh, something broke: " + status);
             });
         };
 
