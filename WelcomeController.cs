@@ -17,16 +17,20 @@
 // // DEALINGS IN THE SOFTWARE.
 
 using System;
-using DotNetNuke.Web.Services;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using DotNetNuke.Web.Api;
 
 namespace ExploreSettings
 {
-    [DnnAuthorize(AllowAnonymous = true)]
-    public class WelcomeController : DnnController
+    [AllowAnonymous]
+    public class WelcomeController : DnnApiController
     {
-        public string HelloWorld()
+        [HttpGet]
+        public HttpResponseMessage HelloWorld()
         {
-            return "Hello World, it is " + DateTime.Now.ToLongTimeString();
+            return Request.CreateResponse(HttpStatusCode.OK, "Hello World, it is " + DateTime.Now.ToLongTimeString());
         }
     }
 }
