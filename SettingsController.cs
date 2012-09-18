@@ -49,20 +49,26 @@ namespace ExploreSettings
             return Request.CreateResponse(HttpStatusCode.OK, TestablePortalController.Instance.GetPortalSettingsDictionary(PortalSettings.PortalId));
         }
 
+        public class UpdateSettingDTO
+        {
+            public string Key { get; set; }
+            public string Value { get; set; }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public HttpResponseMessage UpdateHostSetting(string key, string value)
+        public HttpResponseMessage UpdateHostSetting(UpdateSettingDTO submitted)
         {
-            HostController.Instance.Update(key, value);
+            HostController.Instance.Update(submitted.Key, submitted.Value);
             return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
-        public HttpResponseMessage UpdatePortalSetting(string key, string value)
+        public HttpResponseMessage UpdatePortalSetting(UpdateSettingDTO submitted)
         {
-            TestablePortalController.Instance.UpdatePortalSetting(PortalSettings.PortalId, key, value);
+            TestablePortalController.Instance.UpdatePortalSetting(PortalSettings.PortalId, submitted.Key, submitted.Value);
             return Request.CreateResponse(HttpStatusCode.OK);
         }
     }
