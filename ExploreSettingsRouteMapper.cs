@@ -24,7 +24,7 @@ namespace ExploreSettings
     {
         public void RegisterRoutes(IMapRoute mapRouteManager)
         {
-            mapRouteManager.MapHttpRoute("ExploreSettings", "{controller}/{action}", new[] {"ExploreSettings"});
+            mapRouteManager.MapHttpRoute("ExploreSettings", "default", "{controller}/{action}", new[] {"ExploreSettings"});
         }
     }
 }
