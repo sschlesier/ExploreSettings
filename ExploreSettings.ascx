@@ -96,7 +96,7 @@
             
             $.ajax({
                 type: "GET",
-                url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/" + action,
+                url: sf.getServiceRoot('ExploreSettings') + "Settings/" + action,
                 beforeSend: sf.setModuleHeaders
             }).done(function(data) {
                 if (data !== undefined && data != null) {
@@ -122,8 +122,8 @@
             
             $.ajax({
                 type: "POST",
-                url: sf.getServiceRoot('ExploreSettings') + "Settings.ashx/" + action,
-                data: sf.getAntiForgeryProperty(postData),
+                url: sf.getServiceRoot('ExploreSettings') + "Settings/" + action,
+                data: postData,
                 beforeSend: sf.setModuleHeaders
             }).done(function() {
                 self.loadSettings();

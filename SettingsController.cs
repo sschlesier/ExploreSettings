@@ -17,10 +17,12 @@
 // // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Web.Mvc;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
 using DotNetNuke.Entities.Controllers;
 using DotNetNuke.Security;
-using DotNetNuke.Web.Services;
+using DotNetNuke.Web.Api;
 using ExploreSettings.Testables;
 
 namespace ExploreSettings
@@ -32,40 +34,42 @@ namespace ExploreSettings
     /// </remarks>
     /// </summary>
     [SupportedModules("ExploreSettings")]
-    public class SettingsController : DnnController
+    public class SettingsController : DnnApiController
     {
-        [AcceptVerbs(HttpVerbs.Get)]
-        public JsonResult HostSettings()
+        [HttpGet]
+        public HttpResponseMessage HostSettings()
         {
-            var data = HostController.Instance.GetSettingsDictionary();
-
-            return Json(data, JsonRequestBehavior.AllowGet);
+            return Request.CreateResponse(HttpStatusCode.OK, HostController.Instance.GetSettingsDictionary());
         }
 
-        [AcceptVerbs(HttpVerbs.Get)]
+        [HttpGet]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
-        public JsonResult CurrentPortalSettings()
+        public HttpResponseMessage CurrentPortalSettings()
         {
-            var data = TestablePortalController.Instance.GetPortalSettingsDictionary(PortalSettings.PortalId);
-
-            return Json(data, JsonRequestBehavior.AllowGet);
+            return Request.CreateResponse(HttpStatusCode.OK, TestablePortalController.Instance.GetPortalSettingsDictionary(PortalSettings.PortalId));
         }
 
-        [AcceptVerbs(HttpVerbs.Post)]
+        public class UpdateSettingDTO
+        {
+            public string Key { get; set; }
+            public string Value { get; set; }
+        }
+
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public string UpdateHostSetting(string key, string value)
+        public HttpResponseMessage UpdateHostSetting(UpdateSettingDTO submitted)
         {
-            HostController.Instance.Update(key, value);
-            return "OK";
+            HostController.Instance.Update(submitted.Key, submitted.Value);
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
-        [AcceptVerbs(HttpVerbs.Post)]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
-        public string UpdatePortalSetting(string key, string value)
+        public HttpResponseMessage UpdatePortalSetting(UpdateSettingDTO submitted)
         {
-            TestablePortalController.Instance.UpdatePortalSetting(PortalSettings.PortalId, key, value);
-            return "OK";
+            TestablePortalController.Instance.UpdatePortalSetting(PortalSettings.PortalId, submitted.Key, submitted.Value);
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
     }
 }

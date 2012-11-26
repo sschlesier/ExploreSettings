@@ -17,11 +17,15 @@
 // // DEALINGS IN THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Web.Mvc;
-using DotNetNuke.Common;
+using System.Net.Http;
+using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Hosting;
+using System.Web.Http.Routing;
 using DotNetNuke.ComponentModel;
 using DotNetNuke.Entities.Controllers;
 using DotNetNuke.Entities.Portals;
+using DotNetNuke.Web.Api;
 using ExploreSettings;
 using ExploreSettings.Testables;
 using Moq;
@@ -36,7 +40,6 @@ namespace Tests.ExploreSettings
         public void SetUp()
         {
             ComponentFactory.Container = new SimpleContainer();
-            HttpContextHelper.RegisterMockHttpContext();
         }
 
         [Test]
@@ -49,10 +52,12 @@ namespace Tests.ExploreSettings
             HostController.RegisterInstance(mockHostController.Object);
 
             //Act
-            JsonResult result = new SettingsController().HostSettings();
+            SettingsController settingsController = SetupControllerForTests(new SettingsController(), HttpMethod.Get);
+            HttpResponseMessage result = settingsController.HostSettings();
 
             //Assert
-            CollectionAssert.AreEquivalent(expected, (Dictionary<string, string>)result.Data);
+            Assert.IsTrue(result.IsSuccessStatusCode);
+            CollectionAssert.AreEquivalent(expected, result.Content.ReadAsAsync<Dictionary<string, string>>().Result);
         }
 
         [Test]
@@ -67,15 +72,17 @@ namespace Tests.ExploreSettings
             mockPortalController.Setup(x => x.GetPortalSettingsDictionary(currentPortalId)).Returns(expected);
             TestablePortalController.SetTestableInstance(mockPortalController.Object);
 
-            var controller = new SettingsController
-                                 {ControllerContext = new ControllerContext {HttpContext = HttpContextSource.Current}};
-            HttpContextSource.Current.Items["PortalSettings"] = new PortalSettings{PortalId = currentPortalId};
+            var controller = SetupControllerForTests(new SettingsController(), HttpMethod.Get);
+            var mockInternalTestablePortalController = new Mock<IPortalController>();
+            mockInternalTestablePortalController.Setup(x => x.GetCurrentPortalSettings()).Returns(new PortalSettings {PortalId = currentPortalId});
+            DotNetNuke.Entities.Portals.Internal.TestablePortalController.SetTestableInstance(mockInternalTestablePortalController.Object);
             
             //Act
-            JsonResult result = controller.CurrentPortalSettings();
+            var result = controller.CurrentPortalSettings();
 
             //Assert
-            CollectionAssert.AreEquivalent(expected, (Dictionary<string, string>)result.Data);
+            Assert.IsTrue(result.IsSuccessStatusCode);
+            CollectionAssert.AreEquivalent(expected, result.Content.ReadAsAsync<Dictionary<string, string>>().Result);
         }
 
         [Test]
@@ -86,11 +93,11 @@ namespace Tests.ExploreSettings
             HostController.RegisterInstance(mockHostController.Object);
             
             //Act
-            var controller = new SettingsController();
-            string result = controller.UpdateHostSetting("key", "value");
+            var controller = SetupControllerForTests(new SettingsController(), HttpMethod.Post);
+            var result = controller.UpdateHostSetting("key", "value");
 
             //Assert
-            Assert.AreEqual("OK", result);
+            Assert.IsTrue(result.IsSuccessStatusCode);
             mockHostController.Verify(x => x.Update("key", "value"), Times.Once());
         }
 
@@ -103,15 +110,32 @@ namespace Tests.ExploreSettings
             var mockPortalController = new Mock<ITestablePortalController>();
             TestablePortalController.SetTestableInstance(mockPortalController.Object);
 
-            var controller = new SettingsController { ControllerContext = new ControllerContext { HttpContext = HttpContextSource.Current } };
-            HttpContextSource.Current.Items["PortalSettings"] = new PortalSettings { PortalId = currentPortalId };
+            var mockInternalTestablePortalController = new Mock<IPortalController>();
+            mockInternalTestablePortalController.Setup(x => x.GetCurrentPortalSettings()).Returns(new PortalSettings { PortalId = currentPortalId });
+            DotNetNuke.Entities.Portals.Internal.TestablePortalController.SetTestableInstance(mockInternalTestablePortalController.Object);
+
+            var controller = SetupControllerForTests(new SettingsController(), HttpMethod.Post);
 
             //Act
-            string result = controller.UpdatePortalSetting("key", "value");
+            var result = controller.UpdatePortalSetting("key", "value");
 
             //Assert
-            Assert.AreEqual("OK", result);
+            Assert.IsTrue(result.IsSuccessStatusCode);
             mockPortalController.Verify(x => x.UpdatePortalSetting(currentPortalId, "key", "value"), Times.Once());
+        }
+
+        private static T SetupControllerForTests<T>(T controller, HttpMethod method) where T: DnnApiController
+        {
+            var config = new HttpConfiguration();
+            var request = new HttpRequestMessage(method, "http://localhost/");  //ignoring url in tests so far, if it becomes important it will need changed
+            var route = config.Routes.MapHttpRoute("name", "{controller}/{action}");
+            var routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "Settings" } });
+
+            controller.ControllerContext = new HttpControllerContext(config, routeData, request);
+            controller.Request = request;
+            controller.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = config;
+
+            return controller;
         }
     }
 }

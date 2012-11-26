@@ -16,7 +16,7 @@
 // // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // // DEALINGS IN THE SOFTWARE.
 
-using DotNetNuke.Web.Services;
+using DotNetNuke.Web.Api;
 
 namespace ExploreSettings
 {
@@ -24,7 +24,7 @@ namespace ExploreSettings
     {
         public void RegisterRoutes(IMapRoute mapRouteManager)
         {
-            mapRouteManager.MapRoute("ExploreSettings", "{controller}.ashx/{action}", new[] {"ExploreSettings"});
+            mapRouteManager.MapHttpRoute("ExploreSettings", "default", "{controller}/{action}", new[] {"ExploreSettings"});
         }
     }
 }
