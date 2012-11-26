@@ -94,7 +94,7 @@ namespace Tests.ExploreSettings
             
             //Act
             var controller = SetupControllerForTests(new SettingsController(), HttpMethod.Post);
-            var result = controller.UpdateHostSetting("key", "value");
+            var result = controller.UpdateHostSetting(new SettingsController.UpdateSettingDTO {Key = "key", Value = "value"});
 
             //Assert
             Assert.IsTrue(result.IsSuccessStatusCode);
@@ -117,7 +117,7 @@ namespace Tests.ExploreSettings
             var controller = SetupControllerForTests(new SettingsController(), HttpMethod.Post);
 
             //Act
-            var result = controller.UpdatePortalSetting("key", "value");
+            var result = controller.UpdatePortalSetting(new SettingsController.UpdateSettingDTO { Key = "key", Value = "value" });
 
             //Assert
             Assert.IsTrue(result.IsSuccessStatusCode);

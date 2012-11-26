@@ -2,6 +2,6 @@ This is an example of using the DotNetNuke 6.2 Services Framework from my sessio
 
 The slide deck is can be found in the SlideDeck/ folder.
 
-The master branch contains the original DNN6.2 MVC based implementation.
+The master branch contains the revised DNN7.0 WebAPI based implementation.
 
-The WebAPI branch contains the revised DNN7.0 WebAPI based implementation.
+The MVC_62 branch contains the original DNN6.2 MVC based implementation.
